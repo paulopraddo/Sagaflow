@@ -1,0 +1,110 @@
+{
+  "uid": "sagaflow-overview",
+  "title": "Sagaflow — Order Flow",
+  "tags": ["sagaflow"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "refresh": "10s",
+  "time": { "from": "now-30m", "to": "now" },
+  "panels": [
+    {
+      "id": 1, "type": "stat", "title": "Orders submitted",
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [ { "refId": "A", "expr": "sum(increase(sagaflow_orders_submitted_total[$__range]))" } ],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value", "graphMode": "none" },
+      "fieldConfig": { "defaults": { "decimals": 0, "color": { "mode": "fixed", "fixedColor": "blue" } } }
+    },
+    {
+      "id": 2, "type": "stat", "title": "Completed",
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [ { "refId": "A", "expr": "sum(increase(sagaflow_orders_completed_total[$__range]))" } ],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value", "graphMode": "none" },
+      "fieldConfig": { "defaults": { "decimals": 0, "color": { "mode": "fixed", "fixedColor": "green" } } }
+    },
+    {
+      "id": 3, "type": "stat", "title": "Cancelled (compensated)",
+      "gridPos": { "h": 5, "w": 6, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [ { "refId": "A", "expr": "sum(increase(sagaflow_orders_cancelled_total[$__range]))" } ],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value", "graphMode": "none" },
+      "fieldConfig": { "defaults": { "decimals": 0, "color": { "mode": "fixed", "fixedColor": "orange" } } }
+    },
+    {
+      "id": 4, "type": "stat", "title": "Revenue",
+      "gridPos": { "h": 5, "w": 6, "x": 18, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [ { "refId": "A", "expr": "sum(increase(sagaflow_orders_revenue_BRL_total[$__range]))" } ],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value", "graphMode": "none" },
+      "fieldConfig": { "defaults": { "unit": "currencyBRL", "decimals": 2 } }
+    },
+    {
+      "id": 5, "type": "timeseries", "title": "Order outcomes per minute",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 5 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "refId": "A", "expr": "sum(rate(sagaflow_orders_submitted_total[1m])) * 60", "legendFormat": "submitted" },
+        { "refId": "B", "expr": "sum(rate(sagaflow_orders_completed_total[1m])) * 60", "legendFormat": "completed" },
+        { "refId": "C", "expr": "sum(rate(sagaflow_orders_cancelled_total[1m])) * 60", "legendFormat": "cancelled" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "custom": { "fillOpacity": 10 } } }
+    },
+    {
+      "id": 6, "type": "timeseries", "title": "Time to settle an order (p50 / p95)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 5 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "refId": "A", "expr": "histogram_quantile(0.5, sum by (le, outcome) (rate(sagaflow_orders_duration_seconds_bucket[5m])))", "legendFormat": "p50 {{outcome}}" },
+        { "refId": "B", "expr": "histogram_quantile(0.95, sum by (le, outcome) (rate(sagaflow_orders_duration_seconds_bucket[5m])))", "legendFormat": "p95 {{outcome}}" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    },
+    {
+      "id": 7, "type": "timeseries", "title": "Saga events handled",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 13 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "refId": "A", "expr": "sum by (messaging_masstransit_message_type) (rate(messaging_masstransit_saga_ea_total[1m])) * 60", "legendFormat": "{{messaging_masstransit_message_type}}" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short" } }
+    },
+    {
+      "id": 8, "type": "timeseries", "title": "Consumer errors & retries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 13 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "refId": "A", "expr": "sum by (messaging_masstransit_consumer_type) (rate(messaging_masstransit_consume_errors_ea_total[1m])) * 60", "legendFormat": "errors {{messaging_masstransit_consumer_type}}" },
+        { "refId": "B", "expr": "sum by (messaging_masstransit_consumer_type) (rate(messaging_masstransit_consume_retries_ea_total[1m])) * 60", "legendFormat": "retries {{messaging_masstransit_consumer_type}}" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short" } }
+    },
+    {
+      "id": 9, "type": "timeseries", "title": "Consume duration p95 by consumer",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 21 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "refId": "A", "expr": "histogram_quantile(0.95, sum by (le, messaging_masstransit_consumer_type) (rate(messaging_masstransit_consume_duration_milliseconds_bucket[5m])))", "legendFormat": "{{messaging_masstransit_consumer_type}}" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ms" } }
+    },
+    {
+      "id": 10, "type": "timeseries", "title": "Gateway HTTP p95 by route",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 21 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "refId": "A", "expr": "histogram_quantile(0.95, sum by (le, http_route) (rate(http_server_request_duration_seconds_bucket{service_name=\"Sagaflow.Gateway\"}[5m])))", "legendFormat": "{{http_route}}" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    },
+    {
+      "id": 11, "type": "logs", "title": "Warnings and errors (all services)",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 29 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        { "refId": "A", "expr": "{service_name=~\"Sagaflow.*\"} | severity_text=~\"Warning|Error|Fatal\"" }
+      ],
+      "options": { "showTime": true, "wrapLogMessage": true, "sortOrder": "Descending", "enableLogDetails": true }
+    }
+  ]
+}
