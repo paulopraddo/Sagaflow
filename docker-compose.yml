@@ -66,6 +66,18 @@ services:
     ports: ["5103:8080"]
     depends_on: *service-deps
 
+  payments:
+    build:
+      context: .
+      args:
+        PROJECT: src/Services/Payments/Sagaflow.Payments.Api
+    environment:
+      <<: *service-env
+      ConnectionStrings__payments: Host=postgres;Database=payments;Username=sagaflow;Password=sagaflow
+      PaymentGateway__DeclineAmountAbove: 1000
+    ports: ["5104:8080"]
+    depends_on: *service-deps
+
 volumes:
   postgres-data:
   lgtm-data:
