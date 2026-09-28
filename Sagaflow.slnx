@@ -7,5 +7,6 @@
   </Folder>
   <Folder Name="/src/Services/">
     <Project Path="src/Services/Catalog/Sagaflow.Catalog.Api/Sagaflow.Catalog.Api.csproj" />
+    <Project Path="src/Services/Inventory/Sagaflow.Inventory.Api/Sagaflow.Inventory.Api.csproj" />
   </Folder>
 </Solution>

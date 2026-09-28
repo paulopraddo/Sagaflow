@@ -55,6 +55,17 @@ services:
     ports: ["5101:8080"]
     depends_on: *service-deps
 
+  inventory:
+    build:
+      context: .
+      args:
+        PROJECT: src/Services/Inventory/Sagaflow.Inventory.Api
+    environment:
+      <<: *service-env
+      ConnectionStrings__inventory: Host=postgres;Database=inventory;Username=sagaflow;Password=sagaflow
+    ports: ["5103:8080"]
+    depends_on: *service-deps
+
 volumes:
   postgres-data:
   lgtm-data:
