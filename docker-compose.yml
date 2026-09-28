@@ -90,6 +90,21 @@ services:
     ports: ["5102:8080"]
     depends_on: *service-deps
 
+  gateway:
+    build:
+      context: .
+      args:
+        PROJECT: src/Gateway/Sagaflow.Gateway
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://lgtm:4317
+      ReverseProxy__Clusters__catalog__Destinations__primary__Address: http://catalog:8080
+      ReverseProxy__Clusters__orders__Destinations__primary__Address: http://orders:8080
+      ReverseProxy__Clusters__inventory__Destinations__primary__Address: http://inventory:8080
+      ReverseProxy__Clusters__payments__Destinations__primary__Address: http://payments:8080
+    ports: ["5000:8080"]
+    depends_on: [catalog, orders, inventory, payments]
+
 volumes:
   postgres-data:
   lgtm-data:
