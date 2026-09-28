@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
@@ -112,6 +113,18 @@ public static class Extensions
 
     public static WebApplication MapDefaultEndpoints(this WebApplication app)
     {
+        // Services sit behind the gateway: honor its X-Forwarded-* headers so generated links
+        // (e.g. Location) point at the public URL. Only the gateway is reachable on the internal
+        // network, so every proxy there is trusted.
+        var forwarded = new ForwardedHeadersOptions
+        {
+            ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+                | ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedPrefix,
+        };
+        forwarded.KnownIPNetworks.Clear();
+        forwarded.KnownProxies.Clear();
+        app.UseForwardedHeaders(forwarded);
+
         app.UseSerilogRequestLogging(options =>
             options.GetLevel = (context, _, ex) =>
                 ex is not null || context.Response.StatusCode >= 500 ? Serilog.Events.LogEventLevel.Error
