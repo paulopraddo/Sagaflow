@@ -18,7 +18,7 @@ services:
     environment:
       POSTGRES_USER: sagaflow
       POSTGRES_PASSWORD: sagaflow
-    ports: ["5432:5432"]
+    ports: ["5433:5432"] # 5433 on the host to avoid clashing with a local PostgreSQL
     volumes:
       - ./deploy/postgres/init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql:ro
       - postgres-data:/var/lib/postgresql/data
