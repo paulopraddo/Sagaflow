@@ -44,6 +44,17 @@ services:
     volumes:
       - lgtm-data:/data
 
+  catalog:
+    build:
+      context: .
+      args:
+        PROJECT: src/Services/Catalog/Sagaflow.Catalog.Api
+    environment:
+      <<: *service-env
+      ConnectionStrings__catalog: Host=postgres;Database=catalog;Username=sagaflow;Password=sagaflow
+    ports: ["5101:8080"]
+    depends_on: *service-deps
+
 volumes:
   postgres-data:
   lgtm-data:

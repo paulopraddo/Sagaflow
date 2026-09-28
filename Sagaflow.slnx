@@ -5,4 +5,7 @@
     <Project Path="src/BuildingBlocks/Sagaflow.Infrastructure/Sagaflow.Infrastructure.csproj" />
     <Project Path="src/BuildingBlocks/Sagaflow.ServiceDefaults/Sagaflow.ServiceDefaults.csproj" />
   </Folder>
+  <Folder Name="/src/Services/">
+    <Project Path="src/Services/Catalog/Sagaflow.Catalog.Api/Sagaflow.Catalog.Api.csproj" />
+  </Folder>
 </Solution>

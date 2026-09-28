@@ -396,3 +396,8 @@ dotnet_diagnostic.CA1873.severity = none
 # Minimal APIs / consumers are not a public library surface.
 dotnet_diagnostic.CA1062.severity = none
 dotnet_diagnostic.CA2007.severity = none
+
+# EF Core generated migrations
+[**/Migrations/*.cs]
+generated_code = true
+dotnet_analyzer_diagnostic.severity = none
