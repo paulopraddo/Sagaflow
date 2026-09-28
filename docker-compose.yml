@@ -78,6 +78,18 @@ services:
     ports: ["5104:8080"]
     depends_on: *service-deps
 
+  orders:
+    build:
+      context: .
+      args:
+        PROJECT: src/Services/Orders/Sagaflow.Orders.Api
+    environment:
+      <<: *service-env
+      ConnectionStrings__orders: Host=postgres;Database=orders;Username=sagaflow;Password=sagaflow
+      OrderSaga__PaymentTimeout: "00:00:30"
+    ports: ["5102:8080"]
+    depends_on: *service-deps
+
 volumes:
   postgres-data:
   lgtm-data:
