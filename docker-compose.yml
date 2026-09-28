@@ -1,0 +1,49 @@
+name: sagaflow
+
+x-service-env: &service-env
+  ASPNETCORE_ENVIRONMENT: Development
+  ASPNETCORE_URLS: http://+:8080
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://lgtm:4317
+  ConnectionStrings__rabbitmq: amqp://guest:guest@rabbitmq:5672
+
+x-service-deps: &service-deps
+  postgres:
+    condition: service_healthy
+  rabbitmq:
+    condition: service_healthy
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: sagaflow
+      POSTGRES_PASSWORD: sagaflow
+    ports: ["5432:5432"]
+    volumes:
+      - ./deploy/postgres/init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql:ro
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sagaflow"]
+      interval: 5s
+      retries: 10
+
+  # MassTransit's image ships RabbitMQ with the delayed-message exchange plugin enabled,
+  # which backs saga timeouts and delayed redelivery.
+  rabbitmq:
+    image: masstransit/rabbitmq:4.3.1
+    ports: ["5672:5672", "15672:15672"]
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      retries: 20
+
+  # Grafana + Tempo (traces) + Loki (logs) + Prometheus (metrics) behind one OTLP endpoint.
+  lgtm:
+    image: grafana/otel-lgtm:0.34.0
+    ports: ["3000:3000", "4317:4317", "4318:4318"]
+    volumes:
+      - lgtm-data:/data
+
+volumes:
+  postgres-data:
+  lgtm-data:
