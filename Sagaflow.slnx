@@ -1,2 +1,7 @@
 <Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/BuildingBlocks/">
+    <Project Path="src/BuildingBlocks/Sagaflow.Contracts/Sagaflow.Contracts.csproj" />
+    <Project Path="src/BuildingBlocks/Sagaflow.ServiceDefaults/Sagaflow.ServiceDefaults.csproj" />
+  </Folder>
 </Solution>
