@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
+    <PackageReference Include="Shouldly" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="Testcontainers.PostgreSql" />
+    <PackageReference Include="Testcontainers.RabbitMq" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Services\Catalog\Sagaflow.Catalog.Api\Sagaflow.Catalog.Api.csproj" />
+    <ProjectReference Include="..\..\src\Services\Inventory\Sagaflow.Inventory.Api\Sagaflow.Inventory.Api.csproj" />
+    <ProjectReference Include="..\..\src\Services\Orders\Sagaflow.Orders.Api\Sagaflow.Orders.Api.csproj" />
+    <ProjectReference Include="..\..\src\Services\Payments\Sagaflow.Payments.Api\Sagaflow.Payments.Api.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+    <Using Include="Shouldly" />
+  </ItemGroup>
+
+</Project>

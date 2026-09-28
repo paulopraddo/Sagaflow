@@ -15,6 +15,7 @@
     <Project Path="src/Services/Payments/Sagaflow.Payments.Api/Sagaflow.Payments.Api.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Sagaflow.IntegrationTests/Sagaflow.IntegrationTests.csproj" />
     <Project Path="tests/Sagaflow.Orders.Tests/Sagaflow.Orders.Tests.csproj" />
   </Folder>
 </Solution>
